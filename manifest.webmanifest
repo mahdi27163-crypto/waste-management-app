@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "سامانه ثبت و کنترل ضایعات",
+  "short_name": "ثبت ضایعات",
+  "description": "سامانه ثبت، کنترل و گزارش‌گیری ضایعات",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eaf0f7",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
