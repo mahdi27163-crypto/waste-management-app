@@ -1061,7 +1061,7 @@ var API_KEY = 'wasteAppApi_v1';
 var QUEUE_KEY = 'wasteAppSyncQueue_v1';
 
 var db = loadDB();
-var auth = null, apiUrl = 'https://script.google.com/macros/s/AKfycbw__v0Arj9bCSaCDmfEOhWEv192gSJaMoWt-o7YTG97gK3RkDW-erilXLUHOSWS9gne/exec';
+var auth = null, apiUrl = 'https://script.google.com/macros/s/AKfycbxTih0tZTZcCmLD6Ghw_k9AmYvob5nNntTZMDHU_oavGUT9euR67QgHliAZXsEPQa4_/exec';
 // The central deployment is authoritative; discard any stale endpoint cached by an older app version.
 localStorage.setItem(API_KEY, apiUrl);
 var syncQueue = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
@@ -1573,7 +1573,7 @@ function addMasterItem(key) {
   var input = document.getElementById("new-" + key); var val = input.value.trim();
   if (!val) return;
   if (db.master[key].indexOf(val) >= 0) { alert("این مورد از قبل وجود دارد."); return; }
-  db.master[key].push(val); input.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords();
+  db.master[key].push(val); input.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);});
 }
 
 function addPersonItem() {
@@ -1581,10 +1581,10 @@ function addPersonItem() {
   var code = codeEl.value.trim(); var name = nameEl.value.trim();
   if (!code || !name) { alert("کد و نام را وارد کنید."); return; }
   if (db.master.people.some(function(p){return String(p.code).trim().toLowerCase() === code.toLowerCase();})) { alert("این کد قبلاً ثبت شده است."); return; }
-  db.master.people.push({ code: code, name: name }); codeEl.value = ""; nameEl.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons();
+  db.master.people.push({ code: code, name: name }); codeEl.value = ""; nameEl.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);});
 }
 
-function removeMasterItem(key, index) { if (confirm("این مورد حذف شود؟")) { db.master[key].splice(index, 1); saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); } }
+function removeMasterItem(key, index) { if (confirm("این مورد حذف شود؟")) { db.master[key].splice(index, 1); saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);}); } }
 
 document.getElementById("btn-add-person").addEventListener("click", addPersonItem);
 ["stations","parts","products","causes"].forEach(function(k){ document.getElementById("btn-add-" + k).addEventListener("click", function(){ addMasterItem(k); }); });
@@ -1755,6 +1755,44 @@ function apiCall(action, payload){
     .then(function(t){var j; try{j=JSON.parse(t);}catch(e){throw new Error('پاسخ سرور معتبر نیست.');} if(!j.ok) throw new Error(j.error||'خطای سرویس'); return j.data;});
 }
 
+// MasterData is server-authoritative. Local storage is only an offline cache.
+var MASTER_PENDING_KEY = 'wasteAppMasterPending_v1';
+var masterSyncInFlight = null;
+function refreshMasterDataFromServer(silent){
+  if(!auth || !navigator.onLine) return Promise.resolve(false);
+  if(auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1') return Promise.resolve(false);
+  return apiCall('getMasterData',{}).then(function(data){
+    if(!data || !data.master || !Array.isArray(data.master.causes)) throw new Error('ساختار MasterData دریافتی معتبر نیست.');
+    db.master=data.master;
+    localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
+    renderSelects(); renderReasons(); renderMasterLists();
+    return true;
+  }).catch(function(err){
+    if(!silent) console.warn('MasterData refresh failed:',err);
+    throw err;
+  });
+}
+function syncMasterDataToServer(silent){
+  if(!auth || auth.role!=='admin') return Promise.resolve(false);
+  if(!navigator.onLine){localStorage.setItem(MASTER_PENDING_KEY,'1');return Promise.resolve(false);}
+  if(masterSyncInFlight) return masterSyncInFlight;
+  localStorage.setItem(MASTER_PENDING_KEY,'1');
+  var snapshot=JSON.parse(JSON.stringify(db.master));
+  masterSyncInFlight=apiCall('saveMasterData',{master:snapshot}).then(function(data){
+    if(!data || data.saved!==true || !data.master) throw new Error('ذخیره MasterData توسط سرور تأیید نشد.');
+    db.master=data.master;
+    localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
+    localStorage.removeItem(MASTER_PENDING_KEY);
+    renderSelects(); renderReasons(); renderMasterLists();
+    return true;
+  }).catch(function(err){
+    localStorage.setItem(MASTER_PENDING_KEY,'1');
+    if(!silent) alert('ذخیره اطلاعات پایه در Google Sheets ناموفق بود: '+(err&&err.message?err.message:err));
+    throw err;
+  }).finally(function(){masterSyncInFlight=null;});
+  return masterSyncInFlight;
+}
+
 function showApp(){
   document.getElementById('authGate').style.display='none';
   document.getElementById('mainApp').style.display='block';
@@ -1876,6 +1914,8 @@ function doLogin(){
   status.textContent='در حال بررسی...';
   apiCall('login',{username:username,password:password}).then(function(data){
     setAuth({username:data.username,role:data.role,permissions:data.permissions||['entry'],token:data.token});
+    return refreshMasterDataFromServer(true).catch(function(e){console.warn('Using cached MasterData because server refresh failed:',e);});
+  }).then(function(){
     // Isolate browser-side records and pending writes by signed-in account.
     // Admin retains the consolidated view; ordinary users retain only their own rows.
     if(auth.role!=='admin') {
@@ -1966,9 +2006,12 @@ function syncNow(silent){
     }).finally(function(){suppressQueue=false;});
   }
   
+  var masterTask = (auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1')
+    ? syncMasterDataToServer(true).catch(function(e){console.warn('MasterData push remains pending:',e);})
+    : refreshMasterDataFromServer(true).catch(function(e){console.warn('MasterData refresh failed; cached values retained:',e);});
   var promise;
   if(batch.length && canWrite){
-    promise=apiCall('sync',{operations:batch}).then(function(result){
+    promise=masterTask.then(function(){return apiCall('sync',{operations:batch});}).then(function(result){
       if(!result || Number(result.processed)!==batch.length) throw new Error('سرور عملیات را تأیید نکرد.');
       if(canRead){
         return apiCall('listRecords',{}).then(function(data){
@@ -1981,7 +2024,7 @@ function syncNow(silent){
       }
       removeSentOperations(batch); return;
     });
-  } else if(canRead){ promise=applyServerSnapshot([]); } else { promise=Promise.resolve(); }
+  } else if(canRead){ promise=masterTask.then(function(){return applyServerSnapshot([]);}); } else { promise=masterTask; }
   
   syncInFlight = Promise.resolve(promise).then(function(){updateSyncStatus();}).catch(function(e){
     suppressQueue=false; updateSyncStatus();
@@ -1992,6 +2035,13 @@ function syncNow(silent){
 }
 
 function logout(){ if(syncQueue.length && !confirm('تغییرات همگام‌نشده دارید. خارج می‌شوید؟'))return; setAuth(null); document.getElementById('mainApp').style.display='none'; document.getElementById('authGate').style.display='flex'; document.getElementById('authStatus').textContent='خارج شدید.'; }
+window.addEventListener('online',function(){
+  if(auth){
+    if(auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData retry failed:',e);});
+    else refreshMasterDataFromServer(true).catch(function(e){console.warn('MasterData refresh failed:',e);});
+    syncNow(true).catch(function(e){console.warn('Sync retry failed:',e);});
+  }
+});
 
 function loadDeletedRecords(){
   return apiCall('listDeletedRecords',{}).then(function(data){
