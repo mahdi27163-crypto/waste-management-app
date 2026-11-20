@@ -1215,8 +1215,19 @@ function saveEntryRecord() {
     saveDB();
     renderAll();
     resetForm();
-    alert(isEdit ? "تغییرات ذخیره شد." : "اطلاعات ثبت شد.");
-    syncNow(true).catch(function(e){ console.warn('Background sync failed:', e); });
+
+    // Send only this just-saved record immediately. Older queued changes are
+    // deliberately left untouched and are never silently approved/transferred.
+    if (auth && navigator.onLine) {
+      syncRecordImmediately(r).then(function(){
+        alert(isEdit ? "تغییرات در Google Sheets و شیت کاربر ذخیره شد." : "اطلاعات در Google Sheets و شیت کاربر ذخیره شد.");
+      }).catch(function(err){
+        console.error('Immediate record sync failed:', err);
+        alert("اطلاعات فعلاً در حافظه همین دستگاه ذخیره شد، اما ارسال به Google Sheets تأیید نشد. رکورد حذف نشده و در صف ارسال باقی مانده است. خطا: " + (err && err.message ? err.message : err));
+      });
+    } else {
+      alert("اطلاعات در حافظه همین دستگاه ذخیره شد؛ برای ارسال به Google Sheets اتصال اینترنت لازم است.");
+    }
     return false;
   } catch(err) { alert("خطا در ثبت: " + err.message); return false; }
 }
@@ -1753,6 +1764,42 @@ function apiCall(action, payload){
     body:JSON.stringify(Object.assign({action:action, token:auth && auth.token}, payload||{}))})
     .then(function(r){return r.text();})
     .then(function(t){var j; try{j=JSON.parse(t);}catch(e){throw new Error('پاسخ سرور معتبر نیست.');} if(!j.ok) throw new Error(j.error||'خطای سرویس'); return j.data;});
+}
+
+// Immediate cloud write for a single newly saved/edited record.
+// This bypasses the legacy-queue approval prompt only for this exact record;
+// unrelated pending operations remain queued and unchanged.
+function syncRecordImmediately(record){
+  if(!auth) return Promise.reject(new Error('برای ارسال، ابتدا وارد حساب کاربری شوید.'));
+  if(!navigator.onLine) return Promise.reject(new Error('اتصال اینترنت برقرار نیست.'));
+  if(!record || !record.id) return Promise.reject(new Error('شناسه رکورد معتبر نیست.'));
+  var owner=String(record.owner||auth.username);
+  if(auth.role!=='admin' && owner!==String(auth.username)) return Promise.reject(new Error('اجازه ثبت برای شیت کاربر دیگر وجود ندارد.'));
+  var snapshot=JSON.parse(JSON.stringify(record));
+  snapshot.owner=owner;
+  var operation={op:'upsert',owner:owner,id:String(snapshot.id),record:snapshot};
+  return apiCall('sync',{operations:[operation]}).then(function(result){
+    if(!result || Number(result.processed)!==1) throw new Error('سرور ثبت این رکورد را تأیید نکرد.');
+    // The backend returns only after writing both the owner's sheet and admin aggregate.
+    return apiCall('listRecords',{}).then(function(data){
+      if(!data || !Array.isArray(data.records)) throw new Error('پاسخ تأیید سوابق از سرور معتبر نیست.');
+      var found=data.records.some(function(row){
+        return String(row.id)===String(snapshot.id) &&
+          (auth.role==='admin' || String(row.owner||auth.username)===owner);
+      });
+      if(!found) throw new Error('رکورد پس از ثبت از سرور قابل تأیید نبود؛ در صف ارسال باقی ماند.');
+      // Remove only queued upserts for this same owner+record after server confirmation.
+      syncQueue=syncQueue.filter(function(op){
+        var opOwner=String(op.owner||(op.record&&op.record.owner)||auth.username);
+        var opId=String(op.record?op.record.id:(op.id||''));
+        return !(opOwner===owner && opId===String(snapshot.id) && op.op==='upsert');
+      });
+      persistQueue();
+      knownRecords[owner+'|'+String(snapshot.id)]=JSON.stringify(snapshot);
+      updateSyncStatus();
+      return {saved:true,owner:owner,id:String(snapshot.id)};
+    });
+  });
 }
 
 // MasterData is server-authoritative. Local storage is only an offline cache.
