@@ -1782,7 +1782,17 @@ document.querySelectorAll(".tab").forEach(function(b) {
 var jalaliFmt = new Intl.DateTimeFormat("en-US-u-ca-persian", { year: "numeric", month: "numeric", day: "numeric" });
 function jalaliParts(g) { var a = jalaliFmt.formatToParts(g), o = {}; a.forEach(function(x) { if (x.type === "year" || x.type === "month" || x.type === "day") o[x.type] = Number(x.value); }); return o; }
 function latinDigits(v) { return String(v).replace(/[۰-۹]/g, function(d){return "۰۱۲۳۴۵۶۷۸۹".indexOf(d);}).replace(/[٠-٩]/g, function(d){return "٠١٢٣٤٥٦٧٨٩".indexOf(d);}); }
-function toJalaliText(iso) { if (!iso) return ""; var parts = iso.split("-").map(Number); var p = jalaliParts(new Date(parts[0], parts[1] - 1, parts[2], 12)); return p.year + "/" + String(p.month).padStart(2, "0") + "/" + String(p.day).padStart(2, "0"); }
+function toJalaliText(iso) {
+  if (!iso) return "";
+  var raw=String(iso).trim().replace(/[۰-۹]/g,function(d){return "۰۱۲۳۴۵۶۷۸۹".indexOf(d);}).replace(/[٠-٩]/g,function(d){return "٠١٢٣٤٥٦٧٨٩".indexOf(d);});
+  var m=raw.match(/^(\d{3,4})-(\d{1,2})-(\d{1,2})$/);
+  // Backward compatibility for cached rows saved with Jalali year in dateISO.
+  if(m && Number(m[1])>=1200 && Number(m[1])<=1600) return String(Number(m[1]))+"/"+String(Number(m[2])).padStart(2,"0")+"/"+String(Number(m[3])).padStart(2,"0");
+  var parts = raw.split("-").map(Number);
+  if(parts.length!==3 || !parts.every(Number.isFinite)) return raw.replace(/-/g,"/");
+  var p = jalaliParts(new Date(parts[0], parts[1] - 1, parts[2], 12));
+  return p.year + "/" + String(p.month).padStart(2, "0") + "/" + String(p.day).padStart(2, "0");
+}
 function jalaliToISO(value) {
   var v = latinDigits(value).trim().replace(/[.-]/g, "/"); var m = v.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/); if (!m) return "";
   var jy = +m[1], jm = +m[2], jd = +m[3]; if (jm < 1 || jm > 12 || jd < 1 || jd > 31) return "";
