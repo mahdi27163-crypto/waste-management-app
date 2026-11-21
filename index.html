@@ -1188,6 +1188,19 @@ function num(v) { var s = String(v == null ? "" : v).replace(/[۰-۹]/g, functio
 function fmt(n) { return Number(n || 0).toLocaleString("fa-IR", { maximumFractionDigits: 2 }); }
 function total(r) { return (r.weights || []).reduce(function(a,b){return a + num(b);}, 0); }
 
+// Canonical cause key: Persian/Arabic Yeh and Kaf, spacing and legacy SETUP aliases
+// must resolve to the same cause in tables, edit forms, reports and sync merges.
+function causeKey(value) {
+  var key = String(value == null ? '' : value).trim()
+    .replace(/[\u064A\u0649]/g, '\u06CC')
+    .replace(/\u0643/g, '\u06A9')
+    .replace(/[\u200c\s]+/g, ' ')
+    .replace(/^وزن\s*:\s*/i, '');
+  if (key.toUpperCase() === 'ETUP') key = 'SETUP';
+  return key.toUpperCase() === 'SETUP' ? 'SETUP' : key;
+}
+
+
 function setOptions(id, arr, placeholder) {
   placeholder = placeholder || "انتخاب کنید";
   var el = document.getElementById(id), old = el.value;
@@ -1429,11 +1442,11 @@ function editRecord(id) {
   document.getElementById("saveBtn").textContent = "ذخیره ویرایش";
   renderReasons();
   var weightByCause = {};
-  (r.causes || []).forEach(function(c, i){ weightByCause[String(c)] = (r.weights && r.weights[i] != null) ? r.weights[i] : 0; });
+  (r.causes || []).forEach(function(c, i){ var k=causeKey(c), v=(r.weights && r.weights[i] != null) ? num(r.weights[i]) : 0; if(!Object.prototype.hasOwnProperty.call(weightByCause,k) || v!==0) weightByCause[k]=v; });
   var wInputs = document.querySelectorAll("[data-weight]");
   for (var i = 0; i < wInputs.length; i++) {
     var causeName = wInputs[i].getAttribute('data-weight');
-    wInputs[i].value = Object.prototype.hasOwnProperty.call(weightByCause, String(causeName)) ? weightByCause[String(causeName)] : 0;
+    wInputs[i].value = Object.prototype.hasOwnProperty.call(weightByCause, causeKey(causeName)) ? weightByCause[causeKey(causeName)] : 0;
   }
   updateTotal();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1493,9 +1506,9 @@ function renderExcelLikeTable(bodyId, footId, records, showActions, recordCountI
       var rCauses = Array.isArray(r.causes) ? r.causes : [];
       var rWeights = Array.isArray(r.weights) ? r.weights : [];
       var weightByCause = {};
-      rCauses.forEach(function(c, idx){ weightByCause[String(c)] = num(rWeights[idx]); });
+      rCauses.forEach(function(c, idx){ var k=causeKey(c), v=num(rWeights[idx]); if(!Object.prototype.hasOwnProperty.call(weightByCause,k) || v!==0) weightByCause[k]=v; });
       var causeCols = tableCauses.map(function(c) {
-        var val = num(weightByCause[String(c)]);
+        var val = num(weightByCause[causeKey(c)]);
         return '<td>' + (val > 0 ? fmt(val) : '') + '</td>';
       }).join("");
       var actionsHtml = showActions
@@ -1509,7 +1522,7 @@ function renderExcelLikeTable(bodyId, footId, records, showActions, recordCountI
       var sumTotal = records.reduce(function(s, r){return s + total(r);}, 0);
       var sumQty = records.reduce(function(s, r){return s + num(r.quantity);}, 0);
       var causeSums = tableCauses.map(function(c) {
-        var s = records.reduce(function(acc, r){ var idx = (r.causes || []).indexOf(c); return acc + (idx >= 0 ? num(r.weights && r.weights[idx]) : 0); }, 0);
+        var s = records.reduce(function(acc, r){ var idx = (r.causes || []).findIndex(function(name){return causeKey(name)===causeKey(c);}); return acc + (idx >= 0 ? num(r.weights && r.weights[idx]) : 0); }, 0);
         return '<td>' + (s > 0 ? fmt(s) : '') + '</td>';
       }).join("");
       var ownerFoot = (auth && auth.role==='admin' && bodyId==='recordsBody') ? '<td></td>' : '';
@@ -1676,7 +1689,7 @@ function renderReports() {
     if(!machines[machine])machines[machine]={count:0,weight:0};
     machines[machine].count+=1; machines[machine].weight+=total(r);
     var recordCauses=Array.isArray(r.causes)?r.causes:db.master.causes;
-    recordCauses.forEach(function(c,i){var key=String(c);causes[key]=(causes[key]||0)+num(r.weights&&r.weights[i]);});
+    recordCauses.forEach(function(c,i){var key=causeKey(c);causes[key]=(causes[key]||0)+num(r.weights&&r.weights[i]);});
     if(r.date){
       var day=String(r.date).slice(0,10); daily[day]=(daily[day]||0)+total(r);
       var jalali=toJalaliText(day), monthKey=jalali?jalali.slice(0,7):day.slice(0,7); monthly[monthKey]=(monthly[monthKey]||0)+total(r);
@@ -1890,7 +1903,7 @@ function csvCell(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""'
 function exportCauseValue(record, causeName) {
   var causes = Array.isArray(record.causes) ? record.causes : [];
   var weights = Array.isArray(record.weights) ? record.weights : [];
-  var idx = causes.findIndex(function(c){ return normalizeHeaderText(c) === normalizeHeaderText(causeName); });
+  var idx = causes.findIndex(function(c){ return causeKey(c) === causeKey(causeName); });
   return idx >= 0 ? num(weights[idx]) : 0;
 }
 function normalizeHeaderText(v) {
@@ -2245,8 +2258,8 @@ function syncNow(silent){
       var causes=Array.isArray(r.causes)?r.causes.slice():[];
       var sourceWeights=Array.isArray(r.weights)?r.weights:[];
       var weightMap={};
-      causes.forEach(function(c,i){weightMap[String(c)]=num(sourceWeights[i]);});
-      var weights=causes.map(function(c){return num(weightMap[String(c)]);});
+      causes.forEach(function(c,i){var k=causeKey(c),v=num(sourceWeights[i]);if(!Object.prototype.hasOwnProperty.call(weightMap,k)||v!==0)weightMap[k]=v;});
+      var weights=causes.map(function(c){return num(weightMap[causeKey(c)]);});
       byKey[key]=Object.assign({},r,{owner:owner,causes:causes,weights:weights,totalWeight:weights.reduce(function(a,v){return a+v;},0)});
     });
     // Retain only local changes that are still explicitly queued. A local row
@@ -2257,8 +2270,8 @@ function syncNow(silent){
       else if(op.op==='upsert' && op.record){
         var rec=op.record, causes=Array.isArray(rec.causes)?rec.causes.slice():[];
         var weights=Array.isArray(rec.weights)?rec.weights:[];
-        var map={}; causes.forEach(function(c,i){map[String(c)]=num(weights[i]);});
-        var normalized=causes.map(function(c){return num(map[String(c)]);});
+        var map={}; causes.forEach(function(c,i){var k=causeKey(c),v=num(weights[i]);if(!Object.prototype.hasOwnProperty.call(map,k)||v!==0)map[k]=v;});
+        var normalized=causes.map(function(c){return num(map[causeKey(c)]);});
         byKey[k]=Object.assign({},rec,{causes:causes,weights:normalized,totalWeight:normalized.reduce(function(a,v){return a+v;},0),owner:String(rec.owner||op.owner||auth.username)});
       }
     });
@@ -2316,9 +2329,7 @@ function loadDeletedRecords(){
     var rows=Array.isArray(data.records)?data.records:[]; var causeNames=db.master.causes.slice();
     // Normalize legacy archive cause headers (e.g. ETUP) to the current master cause name.
     function archiveCauseKey(name){
-      var key=String(name==null?'':name).trim();
-      if(key.toUpperCase()==='ETUP') return 'SETUP';
-      return key;
+      return causeKey(name);
     }
     buildTableHead('deletedRecordsHead',causeNames);
     var body=document.getElementById('deletedRecordsBody'); var foot=document.getElementById('deletedRecordsFoot');
