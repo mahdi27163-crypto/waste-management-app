@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'waste-management-pwa-v1';
+const CACHE_NAME = 'waste-management-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',
