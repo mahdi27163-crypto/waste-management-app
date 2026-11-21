@@ -56,6 +56,7 @@ h3 { font-size: 15px; font-weight: 700; margin: 20px 0 12px; color: #334155; }
 .field label { font-size: 12px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
 .field:focus-within label { color: var(--primary); }
 
+.operator-code-field input { display:block; width:100%; min-height:48px; direction:ltr; text-align:left; unicode-bidi:plaintext; -webkit-appearance:none; appearance:none; touch-action:manipulation; user-select:text; -webkit-user-select:text; }
 input, select, textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px; font-family: var(--font); font-size: 14px; color: var(--text-main); background: #fff; transition: all 0.3s ease; }
 input:hover, select:hover, textarea:hover { border-color: #94a3b8; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
@@ -534,8 +535,11 @@ footer{color:#d8eaf5;text-shadow:0 1px 4px #00182b}
 #dashboardManagement #stationCauseReportTable tfoot td,#dashboardManagement #stationCauseReportTable .station-cause-grand-total td{background:#d7f3ef;color:#075b61;border-top:2px solid #0e9aa7}
 #dashboardManagement .pareto-card{margin:14px 0 2px;padding:14px;border:1px solid #83cfc8;border-radius:14px;background:linear-gradient(145deg,#f2fffd,#f7fbff);box-shadow:inset 0 1px 0 #fff}
 #dashboardManagement .pareto-title{font-size:12px;font-weight:900;color:#075b61;margin:0 0 8px}
-#dashboardManagement .pareto-chart{width:100%;overflow-x:auto}
-#dashboardManagement .pareto-chart svg{display:block;width:100%;min-width:520px;height:auto}
+#dashboardManagement .pareto-chart{width:100%;max-width:100%;overflow:visible!important}
+#dashboardManagement .pareto-chart svg{display:block;width:100%;max-width:100%;min-width:0!important;height:auto;overflow:visible}
+#dashboardManagement #productParetoChart,#dashboardManagement #operatorParetoChart,#dashboardManagement #stationParetoChart{width:100%;max-width:100%;overflow:visible!important;padding:8px 0 10px}
+#dashboardManagement #productParetoChart svg,#dashboardManagement #operatorParetoChart svg,#dashboardManagement #stationParetoChart svg{display:block;width:100%;max-width:100%;min-width:0!important;height:auto}
+
 #dashboardManagement .pareto-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;color:#496779;font-size:10px;margin-top:6px}
 #dashboardManagement .pareto-legend span{display:inline-flex;align-items:center;gap:6px}
 #dashboardManagement .pareto-key{width:10px;height:10px;border-radius:2px;display:inline-block}
@@ -667,9 +671,10 @@ html body #dashboardManagement .dashboard-stat-icon,html body #dashboardManageme
 #dashboardManagement .pareto-card{background:linear-gradient(145deg,rgba(7,29,49,.9),rgba(8,63,77,.8));border:1px solid rgba(51,208,202,.45);border-radius:12px;padding:12px;margin:12px 0}
 #dashboardManagement .pareto-title{color:#8af0e8}
 #dashboardManagement .pareto-chart svg text{fill:#c9e9ed}
-#dashboardManagement #productParetoChart,#dashboardManagement #operatorParetoChart,#dashboardManagement #stationParetoChart{width:100%;overflow-x:auto;overflow-y:hidden;padding:8px 0 10px}
-#dashboardManagement #productParetoChart svg,#dashboardManagement #operatorParetoChart svg,#dashboardManagement #stationParetoChart svg{display:block;width:100%;min-width:900px;height:auto}
-@media(max-width:700px){#dashboardManagement #productParetoChart svg,#dashboardManagement #operatorParetoChart svg,#dashboardManagement #stationParetoChart svg{min-width:900px}}
+#dashboardManagement #productParetoChart,#dashboardManagement #operatorParetoChart,#dashboardManagement #stationParetoChart{width:100%;max-width:100%;overflow:visible!important;overflow-x:visible!important;overflow-y:visible!important;padding:8px 0 10px}
+#dashboardManagement #productParetoChart svg,#dashboardManagement #operatorParetoChart svg,#dashboardManagement #stationParetoChart svg{display:block;width:100%;max-width:100%;min-width:0!important;height:auto}
+#dashboardManagement .pareto-chart svg{overflow:visible!important}
+
 #dashboardManagement .dashboard-table-actions{justify-content:flex-start!important}
 #dashboardManagement .dashboard-pdf-export{background:linear-gradient(135deg,#11aeb0,#08717f)!important;border:1px solid #52e0d9!important;box-shadow:0 5px 14px rgba(3,18,32,.24)!important;color:#fff!important}
 #dashboardManagement .dashboard-pdf-export:hover{filter:brightness(1.12);transform:translateY(-1px)}
@@ -754,8 +759,8 @@ html body #dashboardManagement .dashboard-chart-title p{color:#24477e!important}
   html,body{width:297mm!important;height:210mm!important;min-width:297mm!important;min-height:210mm!important;max-width:297mm!important;max-height:210mm!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
   body.pdf-exporting *{visibility:hidden!important}
   body.pdf-exporting .pdf-print-target,body.pdf-exporting .pdf-print-target *{visibility:visible!important}
-  body.pdf-exporting .pdf-export-host{position:fixed!important;inset:0!important;width:297mm!important;height:210mm!important;max-width:297mm!important;max-height:210mm!important;margin:0!important;padding:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;visibility:visible!important;background:#fff!important}
-  body.pdf-exporting .pdf-export-host .pdf-print-target{position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:287mm!important;max-width:287mm!important;height:auto!important;max-height:none!important;min-height:0!important;box-sizing:border-box!important;margin:0!important;padding:4mm!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important;transform:scale(var(--pdf-scale,1))!important;transform-origin:center center!important;background:#fff!important;border:1mm solid #087f83!important;border-radius:3mm!important;box-shadow:none!important}
+  body.pdf-exporting .pdf-export-host{position:fixed!important;inset:0!important;width:297mm!important;height:210mm!important;max-width:297mm!important;max-height:210mm!important;margin:0!important;padding:0!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;overflow:hidden!important;visibility:visible!important;background:#fff!important}
+  body.pdf-exporting .pdf-export-host .pdf-print-target{position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:287mm!important;max-width:287mm!important;height:auto!important;max-height:none!important;min-height:0!important;box-sizing:border-box!important;margin:0!important;padding:4mm!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important;transform:scale(var(--pdf-scale,1))!important;transform-origin:top center!important;background:#fff!important;border:1mm solid #087f83!important;border-radius:3mm!important;box-shadow:none!important}
   body.pdf-exporting .pdf-print-target .dashboard-pdf-export{display:none!important}
   body.pdf-exporting .pdf-print-target .table-wrap{display:block!important;overflow:visible!important;max-width:100%!important;width:100%!important;border:1.2px solid #15999a!important}
   body.pdf-exporting .pdf-print-target table{display:table!important;width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;border-spacing:0!important}
@@ -820,6 +825,13 @@ html body #dashboardManagement .dashboard-chart-title p{color:#24477e!important}
 }
 </style>
 
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ثبت ضایعات">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
 </head>
 <body>
 
@@ -830,6 +842,8 @@ html body #dashboardManagement .dashboard-chart-title p{color:#24477e!important}
   <div class="field"><label>نام کاربری</label><select id="loginUser" autocomplete="username"><option value="">در حال دریافت فهرست کاربران...</option></select><button id="retryLoginUsers" type="button" class="secondary" style="display:none;margin-top:6px;padding:5px 10px;font-size:11px">تلاش مجدد برای دریافت فهرست کاربران</button></div>
   <div class="field"><label>رمز عبور</label><div style="display:flex;gap:8px;align-items:center"><input id="loginPass" type="password" placeholder="رمز عبور" style="flex:1"><label style="display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:12px"><input id="showLoginPass" type="checkbox" style="width:auto"> نمایش</label></div></div>
   <button id="loginBtn" class="success" type="button">ورود به سیستم</button>
+  <button id="biometricLoginBtn" class="secondary" type="button" style="display:none;margin-top:8px" onclick="loginWithBiometric()">ورود با اثر انگشت گوشی</button>
+  <div id="biometricHint" style="display:none;margin-top:8px;padding:9px;border-radius:8px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.8"></div>
   <div id="authStatus">آدرس سرویس هنوز تنظیم نشده است.</div>
   <div class="auth-maker">تهیه و توسعه سامانه<strong>Mahdi khazaei</strong></div>
  </div>
@@ -857,7 +871,7 @@ html body #dashboardManagement .dashboard-chart-title p{color:#24477e!important}
     <form id="entryForm" novalidate>
       <div class="grid">
         <div class="field"><label>تاریخ ثبت</label><div class="jalali-picker" data-picker="date"><input id="date" type="hidden"><button type="button" class="date-display" data-date-display="date">انتخاب تاریخ</button><div class="calendar-popover" data-calendar="date"></div></div></div>
-        <div class="field"><label>کد اپراتور</label><input id="personCode" type="text" list="personCodes" placeholder="کد پرسنلی"><datalist id="personCodes"></datalist></div>
+        <div class="field operator-code-field"><label for="personCode">کد اپراتور</label><input id="personCode" name="personCode" type="text" placeholder="کد پرسنلی را وارد کنید" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" dir="ltr" aria-autocomplete="list" aria-controls="personCodeSuggestions" aria-expanded="false"><div id="personCodeSuggestions" class="operator-suggestions" role="listbox" aria-label="فهرست اپراتورها" hidden></div></div>
         <div class="field"><label>نام اپراتور</label><input id="personName" readonly style="background:#f1f5f9"></div>
         <div class="field"><label>ایستگاه</label><select id="station" required></select></div>
         <div class="field"><label>کد دستگاه</label><input id="machine" type="number" min="0" step="1" placeholder="مثلاً 102"></div>
@@ -1061,8 +1075,9 @@ var API_KEY = 'wasteAppApi_v1';
 var QUEUE_KEY = 'wasteAppSyncQueue_v1';
 
 var db = loadDB();
-var auth = null, apiUrl = 'https://script.google.com/macros/s/AKfycbxTih0tZTZcCmLD6Ghw_k9AmYvob5nNntTZMDHU_oavGUT9euR67QgHliAZXsEPQa4_/exec';
-// The central deployment is authoritative; discard any stale endpoint cached by an older app version.
+var dashboardRecords = [];
+var DASHBOARD_CACHE_KEY = 'wasteAppDashboardCache_v1';
+var auth = null, apiUrl = (localStorage.getItem(API_KEY) || 'https://script.google.com/macros/s/AKfycbxTih0tZTZcCmLD6Ghw_k9AmYvob5nNntTZMDHU_oavGUT9euR67QgHliAZXsEPQa4_/exec').trim();
 localStorage.setItem(API_KEY, apiUrl);
 var syncQueue = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
 var suppressQueue = false;
@@ -1108,8 +1123,65 @@ function queueRecordChanges(oldMap, newRecords){
   knownRecords={}; Object.keys(newMap).forEach(function(k){knownRecords[k]=JSON.stringify(newMap[k]);});
   updateSyncStatus();
 }
-function loadAuth(){ try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null');}catch(e){return null;} }
-function setAuth(a){ auth=a; if(a) localStorage.setItem(AUTH_KEY,JSON.stringify(a)); else localStorage.removeItem(AUTH_KEY); }
+// Keep the offline session in its own storage key as a recovery copy.
+var OFFLINE_SESSION_KEY='wasteAppOfflineSession_v2';
+function nativeOfflineStore(){
+  try{return window.WasteOffline||null;}catch(e){return null;}
+}
+function loadAuth(){
+  try{var saved=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');if(saved&&saved.username)return saved;}catch(e){}
+  try{var offline=JSON.parse(localStorage.getItem(OFFLINE_SESSION_KEY)||'null');if(offline&&offline.username)return offline;}catch(e){}
+  // Android SharedPreferences is the durable fallback if WebView DOM storage is unavailable.
+  try{var bridge=nativeOfflineStore(),raw=bridge&&bridge.loadSession();if(raw){var nativeSession=JSON.parse(raw);if(nativeSession&&nativeSession.username)return nativeSession;}}catch(e){}
+  return null;
+}
+function setAuth(a){
+  auth=a;
+  if(a){
+    var safe={username:a.username,role:a.role,permissions:Array.isArray(a.permissions)?a.permissions:[],token:a.token||''};
+    var offlineSafe={username:safe.username,role:safe.role,permissions:safe.permissions};
+    try{localStorage.setItem(AUTH_KEY,JSON.stringify(safe));}catch(e){}
+    try{localStorage.setItem(OFFLINE_SESSION_KEY,JSON.stringify(offlineSafe));}catch(e){}
+    try{var bridge=nativeOfflineStore();if(bridge)bridge.saveSession(JSON.stringify(offlineSafe));}catch(e){console.warn('Native offline session:',e);}
+  }else{
+    try{localStorage.removeItem(AUTH_KEY);localStorage.removeItem(OFFLINE_SESSION_KEY);}catch(e){}
+    try{var bridge=nativeOfflineStore();if(bridge){bridge.clearSession();bridge.clearCredential();}}catch(e){}
+  }
+}
+// Offline password verifier: stores a salted PBKDF2 hash, never the plaintext password.
+var OFFLINE_CREDENTIAL_KEY='wasteAppOfflineCredential_v1';
+function bytesToHex(bytes){return Array.prototype.map.call(bytes,function(b){return ('0'+b.toString(16)).slice(-2);}).join('');}
+function hexToBytes(hex){var out=new Uint8Array(hex.length/2);for(var i=0;i<out.length;i++)out[i]=parseInt(hex.substr(i*2,2),16);return out;}
+function deriveOfflinePassword(password,salt){
+  if(!window.crypto||!crypto.subtle)return Promise.reject(new Error('امکان بررسی امن رمز در این نسخه اندروید فعال نیست.'));
+  return crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits'])
+    .then(function(key){return crypto.subtle.deriveBits({name:'PBKDF2',salt:salt,iterations:150000,hash:'SHA-256'},key,256);})
+    .then(function(bits){return bytesToHex(new Uint8Array(bits));});
+}
+function saveOfflineCredential(username,password){
+  // Native Android PBKDF2 + synchronous SharedPreferences commit is the primary path.
+  try{var bridge=nativeOfflineStore();if(bridge&&typeof bridge.saveCredential==='function'&&bridge.saveCredential(username,password))return Promise.resolve();}catch(e){console.warn('Native credential save:',e);}
+  // Browser/PWA fallback when the app is not running inside the Android wrapper.
+  try{
+    var salt=crypto.getRandomValues(new Uint8Array(16));
+    return deriveOfflinePassword(password,salt).then(function(hash){
+      var credential={username:username,salt:bytesToHex(salt),hash:hash,iterations:150000};
+      localStorage.setItem(OFFLINE_CREDENTIAL_KEY,JSON.stringify(credential));
+    });
+  }catch(e){return Promise.reject(e);}
+}
+function verifyOfflineCredential(username,password){
+  try{var bridge=nativeOfflineStore();if(bridge&&typeof bridge.verifyCredential==='function')return Promise.resolve(!!bridge.verifyCredential(username,password));}catch(e){console.warn('Native credential verification:',e);}
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(OFFLINE_CREDENTIAL_KEY)||'null');}catch(e){}
+  if(!saved||saved.username!==username||!saved.salt||!saved.hash)return Promise.resolve(false);
+  return deriveOfflinePassword(password,hexToBytes(saved.salt)).then(function(hash){
+    if(hash.length!==saved.hash.length)return false;
+    var diff=0;for(var i=0;i<hash.length;i++)diff|=hash.charCodeAt(i)^saved.hash.charCodeAt(i);
+    return diff===0;
+  }).catch(function(){return false;});
+}
+
 
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
 function num(v) { var s = String(v == null ? "" : v).replace(/[۰-۹]/g, function(d){return "۰۱۲۳۴۵۶۷۸۹".indexOf(d);}).replace(/[٠-٩]/g, function(d){return "٠١٢٣٤٥٦٧٨٩".indexOf(d);}).replace(/,/g, "."); var n = Number(s); return Number.isFinite(n) && n > 0 ? n : 0; }
@@ -1130,7 +1202,7 @@ function renderSelects() {
   setOptions("filterProduct", db.master.products, "همه محصولات");
   setOptions("reportProduct", db.master.products, "همه محصولات");
   setOptions("reportStation", db.master.stations, "همه ایستگاه‌ها");
-  document.getElementById("personCodes").innerHTML = db.master.people.map(function(p){return '<option value="' + esc(p.code) + '">' + esc(p.name) + '</option>';}).join("");
+  // فهرست datalist حذف شده است؛ برای سازگاری با مرورگرهای موبایل، کد اپراتور مستقیماً تایپ می‌شود.
 }
 
 function renderReasons() {
@@ -1168,6 +1240,8 @@ function updateTotal() {
 
 function resetForm() {
   document.getElementById("entryForm").reset();
+  document.getElementById("personName").value = "";
+  hideOperatorSuggestions();
   document.getElementById("editId").value = "";
   setEntryDate(todayISO());
   document.getElementById("quantity").value = "";
@@ -1215,19 +1289,8 @@ function saveEntryRecord() {
     saveDB();
     renderAll();
     resetForm();
-
-    // Send only this just-saved record immediately. Older queued changes are
-    // deliberately left untouched and are never silently approved/transferred.
-    if (auth && navigator.onLine) {
-      syncRecordImmediately(r).then(function(){
-        alert(isEdit ? "تغییرات در Google Sheets و شیت کاربر ذخیره شد." : "اطلاعات در Google Sheets و شیت کاربر ذخیره شد.");
-      }).catch(function(err){
-        console.error('Immediate record sync failed:', err);
-        alert("اطلاعات فعلاً در حافظه همین دستگاه ذخیره شد، اما ارسال به Google Sheets تأیید نشد. رکورد حذف نشده و در صف ارسال باقی مانده است. خطا: " + (err && err.message ? err.message : err));
-      });
-    } else {
-      alert("اطلاعات در حافظه همین دستگاه ذخیره شد؛ برای ارسال به Google Sheets اتصال اینترنت لازم است.");
-    }
+    alert(isEdit ? "تغییرات ذخیره شد." : "اطلاعات ثبت شد.");
+    syncNow(true).catch(function(e){ console.warn('Background sync failed:', e); });
     return false;
   } catch(err) { alert("خطا در ثبت: " + err.message); return false; }
 }
@@ -1236,6 +1299,7 @@ function saveEntryRecord() {
 document.getElementById("entryForm").addEventListener("keydown", function(e){
   if (e.key !== "Enter" || e.shiftKey) return;
   var target = e.target;
+  if (target && target.id === "personCode" && selectHighlightedOperator()) { e.preventDefault(); return; }
   if (!target || target.tagName === "TEXTAREA" || target.tagName === "BUTTON") return;
   e.preventDefault();
   var fields = Array.prototype.slice.call(this.querySelectorAll('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'))
@@ -1248,13 +1312,104 @@ document.getElementById("entryForm").addEventListener("submit", function(e){ e.p
 document.getElementById("saveBtn").addEventListener("click", function(e){ e.preventDefault(); saveEntryRecord(); });
 document.getElementById("clearBtn").addEventListener("click", function(){ setTimeout(resetForm, 0); });
 
-function lookupPerson() {
-  var code = document.getElementById("personCode").value.trim();
-  var p = db.master.people.find(function(x){return String(x.code).trim().toLowerCase() === code.toLowerCase();});
-  document.getElementById("personName").value = p ? p.name : "";
-}
-document.getElementById("personCode").addEventListener("input", lookupPerson);
-document.getElementById("personCode").addEventListener("change", lookupPerson);
+  function normalizeOperatorCode(value) {
+    return String(value == null ? "" : value)
+      .replace(/[۰-۹]/g, function(d){ return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)); })
+      .replace(/[٠-٩]/g, function(d){ return String("٠١٢٣٤٥٦٧٨٩".indexOf(d)); })
+      .replace(/[\u200c\u200e\u200f\u202a-\u202e\ufeff]/g, "")
+      .replace(/\s+/g, "").trim().toLowerCase();
+  }
+  var operatorSuggestionIndex = -1;
+  function operatorPeople() { return db && db.master && Array.isArray(db.master.people) ? db.master.people : []; }
+  function lookupPerson() {
+    var input = document.getElementById("personCode");
+    var name = document.getElementById("personName");
+    if (!input || !name) return null;
+    var code = normalizeOperatorCode(input.value);
+    var p = code ? operatorPeople().find(function(x){ return normalizeOperatorCode(x && x.code) === code; }) : null;
+    name.value = p ? String(p.name || "") : "";
+    return p || null;
+  }
+  function renderOperatorSuggestions() {
+    var input = document.getElementById("personCode");
+    var box = document.getElementById("personCodeSuggestions");
+    if (!input || !box) return;
+    var query = normalizeOperatorCode(input.value);
+    var people = operatorPeople();
+    var matches = people.filter(function(p){
+      var c = normalizeOperatorCode(p && p.code);
+      var n = normalizeOperatorCode(p && p.name);
+      return !query || c.indexOf(query) === 0 || n.indexOf(query) >= 0;
+    }).slice(0, 40);
+    operatorSuggestionIndex = -1;
+    if (!matches.length) {
+      box.innerHTML = people.length ? '<div class="operator-suggestion-empty">اپراتوری با این کد یا نام پیدا نشد</div>' : '<div class="operator-suggestion-empty">فهرست اپراتورها خالی است؛ ابتدا از بخش مدیریت، اپراتورها را تعریف کنید</div>';
+    } else {
+      box.innerHTML = matches.map(function(p,i){
+        return '<button type="button" class="operator-suggestion" role="option" data-operator-index="'+i+'"><span class="operator-suggestion-name">'+esc(p.name || "بدون نام")+'</span><span class="operator-suggestion-code">'+esc(p.code == null ? "" : p.code)+'</span></button>';
+      }).join("");
+      box._operatorMatches = matches;
+    }
+    box.hidden = false;
+    input.setAttribute("aria-expanded","true");
+  }
+  function hideOperatorSuggestions() {
+    var box = document.getElementById("personCodeSuggestions");
+    var input = document.getElementById("personCode");
+    if (box) box.hidden = true;
+    if (input) input.setAttribute("aria-expanded","false");
+    operatorSuggestionIndex = -1;
+  }
+  function chooseOperator(p) {
+    if (!p) return;
+    var input = document.getElementById("personCode");
+    input.value = String(p.code == null ? "" : p.code);
+    lookupPerson();
+    hideOperatorSuggestions();
+    input.focus();
+    try { var end=input.value.length; input.setSelectionRange(end,end); } catch(_) {}
+  }
+  function selectHighlightedOperator() {
+    var box = document.getElementById("personCodeSuggestions");
+    if (!box || box.hidden) return false;
+    var matches = box._operatorMatches || [];
+    if (!matches.length) return false;
+    var idx = operatorSuggestionIndex >= 0 ? operatorSuggestionIndex : 0;
+    chooseOperator(matches[idx]);
+    return true;
+  }
+  var personCodeInput = document.getElementById("personCode");
+  var personSuggestions = document.getElementById("personCodeSuggestions");
+  personCodeInput.addEventListener("input", function(){ lookupPerson(); renderOperatorSuggestions(); });
+  personCodeInput.addEventListener("keyup", function(e){ if (["ArrowDown","ArrowUp","Enter","Escape"].indexOf(e.key)<0) { lookupPerson(); renderOperatorSuggestions(); } });
+  personCodeInput.addEventListener("compositionend", function(){ lookupPerson(); renderOperatorSuggestions(); });
+  personCodeInput.addEventListener("change", function(){ lookupPerson(); });
+  personCodeInput.addEventListener("paste", function(){ setTimeout(function(){ lookupPerson(); renderOperatorSuggestions(); }, 30); });
+  personCodeInput.addEventListener("focus", renderOperatorSuggestions);
+  personCodeInput.addEventListener("blur", function(){ setTimeout(hideOperatorSuggestions, 180); });
+  personCodeInput.addEventListener("keydown", function(e){
+    var box=document.getElementById("personCodeSuggestions");
+    if (!box || box.hidden) return;
+    var matches=box._operatorMatches || [];
+    if (e.key === "ArrowDown" && matches.length) { e.preventDefault(); operatorSuggestionIndex=Math.min(operatorSuggestionIndex+1,matches.length-1); }
+    else if (e.key === "ArrowUp" && matches.length) { e.preventDefault(); operatorSuggestionIndex=Math.max(operatorSuggestionIndex-1,0); }
+    else if (e.key === "Escape") { hideOperatorSuggestions(); return; }
+    else return;
+    Array.prototype.forEach.call(box.querySelectorAll(".operator-suggestion"),function(el,i){el.classList.toggle("active",i===operatorSuggestionIndex);});
+  });
+  personSuggestions.addEventListener("pointerdown", function(e){
+    var button=e.target.closest ? e.target.closest("[data-operator-index]") : null;
+    if (!button) return;
+    e.preventDefault();
+    var matches=personSuggestions._operatorMatches || [];
+    chooseOperator(matches[Number(button.getAttribute("data-operator-index"))]);
+  });
+  personSuggestions.addEventListener("click", function(e){
+    var button=e.target.closest ? e.target.closest("[data-operator-index]") : null;
+    if (!button) return;
+    var matches=personSuggestions._operatorMatches || [];
+    chooseOperator(matches[Number(button.getAttribute("data-operator-index"))]);
+  });
 
 function editRecord(id) {
   if(auth && auth.role!=='admin' && (auth.permissions||[]).indexOf('entry')<0){alert('دسترسی لازم را ندارید.');return;}
@@ -1453,21 +1608,24 @@ function renderParetoChart(id, entries, labelLimit) {
     .filter(function(e){return e[1]>0;}).sort(function(a,b){return b[1]-a[1];});
   if(!data.length){host.innerHTML='<div class="chart-empty">داده‌ای برای نمایش وجود ندارد</div>';return;}
   var limit=labelLimit||14; if(data.length>limit){var rest=data.slice(limit).reduce(function(a,e){return a+e[1];},0);data=data.slice(0,limit);if(rest>0)data.push(['سایر',rest]);}
-  var angledLabels=['productParetoChart','operatorParetoChart','stationParetoChart'].indexOf(id)!==-1;
-  /* Keep each complete category name directly below its own bar, rotated diagonally for readability. */
-  var totalValue=data.reduce(function(a,e){return a+e[1];},0),w=angledLabels?Math.max(900, data.length*112+102):760,h=angledLabels?420:320,left=54,right=48,top=24,bottom=angledLabels?166:82;
-  var plotW=w-left-right,plotH=h-top-bottom,step=plotW/data.length,barW=Math.min(34,step*.58),max=data[0][1],cum=0,pts=[],parts=[];
+  var verticalLabels=['productParetoChart','operatorParetoChart','stationParetoChart'].indexOf(id)!==-1;
+  var longestLabel=verticalLabels?Math.max.apply(null,data.map(function(e){return String(e[0]).length;})):0;
+  /* Keep every chart inside its card: SVG scales to the card width, with no horizontal scrollbar. */
+  var w=900, left=58, right=54, top=26, plotH=250;
+  var bottom=verticalLabels?Math.max(100, longestLabel*7.2+34):82;
+  var h=top+plotH+bottom, plotW=w-left-right, step=plotW/data.length, barW=Math.min(38,step*.52), max=data[0][1], totalValue=data.reduce(function(a,e){return a+e[1];},0),cum=0,pts=[],parts=[];
   [0,.25,.5,.75,1].forEach(function(t){var y=top+plotH-t*plotH;parts.push('<line x1="'+left+'" y1="'+y+'" x2="'+(w-right)+'" y2="'+y+'" stroke="#d5e9e7" stroke-dasharray="4 5"/><text x="'+(left-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="#64818b">'+esc(fmt(max*t))+'</text><text x="'+(w-right+8)+'" y="'+(y+4)+'" font-size="10" fill="#0e817d">'+Math.round(t*100)+'٪</text>');});
   data.forEach(function(e,i){var x=left+step*i+(step-barW)/2,bh=plotH*e[1]/max,y=top+plotH-bh;cum+=e[1];var pct=cum/totalValue*100,c=['#0f9b8e','#168fa3','#147d9b','#2563a6'][i%4],label=e[0];
-    var labelMarkup=angledLabels
-      ? '<text x="'+(x+barW/2)+'" y="'+(h-bottom+18)+'" text-anchor="end" transform="rotate(-45 '+(x+barW/2)+' '+(h-bottom+18)+')" font-size="11" font-weight="700" fill="#496779"><title>'+esc(e[0])+'</title>'+esc(label)+'</text>'
+    /* Vertical labels start at the baseline and extend DOWN, never over the bars. */
+    var labelMarkup=verticalLabels
+      ? '<text x="'+(x+barW/2)+'" y="'+(top+plotH+10)+'" text-anchor="start" dominant-baseline="hanging" direction="rtl" unicode-bidi="plaintext" transform="rotate(-90 '+(x+barW/2)+' '+(top+plotH+10)+')" font-size="11" font-weight="700" fill="#496779"><title>'+esc(e[0])+'</title>'+esc(e[0])+'</text>'
       : '<text x="'+(x+barW/2)+'" y="'+(h-53)+'" text-anchor="middle" font-size="10" fill="#496779"><title>'+esc(e[0])+'</title>'+esc(label.length>13?label.slice(0,12)+'…':label)+'</text>';
     parts.push('<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="'+c+'"><title>'+esc(e[0]+': '+fmt(e[1])+' گرم')+'</title></rect><text x="'+(x+barW/2)+'" y="'+Math.max(13,y-7)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#17465a">'+esc(fmt(e[1]))+'</text>'+labelMarkup);
     pts.push([x+barW/2,top+plotH-plotH*pct/100,pct]);
   });
   parts.push('<polyline points="'+pts.map(function(p){return p[0]+','+p[1];}).join(' ')+'" fill="none" stroke="#e28a22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>');
   pts.forEach(function(p){parts.push('<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#fff" stroke="#d97706" stroke-width="2"><title>تجمعی: '+p[2].toFixed(1)+'٪</title></circle><text x="'+p[0]+'" y="'+(p[1]-9)+'" text-anchor="middle" font-size="9" font-weight="800" fill="#a85a0a">'+p[2].toFixed(0)+'٪</text>');});
-  host.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="نمودار پاراتو بر اساس وزن ضایعات">'+parts.join('')+'</svg><div class="pareto-legend"><span><i class="pareto-key" style="background:#0f9b8e"></i>وزن ضایعات (گرم)</span><span><i class="pareto-key" style="background:#e28a22"></i>درصد تجمعی</span></div>';
+  host.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMin meet" role="img" aria-label="نمودار پاراتو بر اساس وزن ضایعات">'+parts.join('')+'</svg><div class="pareto-legend"><span><i class="pareto-key" style="background:#0f9b8e"></i>وزن ضایعات (گرم)</span><span><i class="pareto-key" style="background:#e28a22"></i>درصد تجمعی</span></div>';
 }
 
 function renderReports() {
@@ -1475,7 +1633,8 @@ function renderReports() {
   var to = document.getElementById("reportTo").value;
   var p = document.getElementById("reportProduct").value;
   var s = document.getElementById("reportStation").value;
-  var rows = db.records.filter(function(r) {
+  var reportSource = (auth && (auth.role==='admin' || (auth.permissions||[]).indexOf('reports')>=0) && dashboardRecords.length) ? dashboardRecords : db.records;
+  var rows = reportSource.filter(function(r) {
     if (from && r.date < from) return false;
     if (to && r.date > to) return false;
     if (p && r.product !== p) return false;
@@ -1501,7 +1660,7 @@ function renderReports() {
     var span=Math.round((endMs-startMs)/86400000)+1, prevEnd=new Date(startMs-86400000), prevStart=new Date(startMs-span*86400000);
     function isoUTC(d){return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}
     var prevFrom=isoUTC(prevStart), prevTo=isoUTC(prevEnd);
-    var prevRows=db.records.filter(function(r){if(!r.date||r.date<prevFrom||r.date>prevTo)return false;if(p&&r.product!==p)return false;if(s&&r.station!==s)return false;return true;});
+    var prevRows=reportSource.filter(function(r){if(!r.date||r.date<prevFrom||r.date>prevTo)return false;if(p&&r.product!==p)return false;if(s&&r.station!==s)return false;return true;});
     var prevSum=prevRows.reduce(function(a,r){return a+total(r);},0);
     if(prevSum===0 && sum===0){changeEl.textContent='۰٪';hintEl.textContent='در هر دو بازه ضایعاتی ثبت نشده است';}
     else if(prevSum===0){changeEl.textContent='جدید';hintEl.textContent='در بازه قبلی ضایعاتی ثبت نشده بود';}
@@ -1584,7 +1743,7 @@ function addMasterItem(key) {
   var input = document.getElementById("new-" + key); var val = input.value.trim();
   if (!val) return;
   if (db.master[key].indexOf(val) >= 0) { alert("این مورد از قبل وجود دارد."); return; }
-  db.master[key].push(val); input.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);});
+  db.master[key].push(val); input.value = ""; saveDB(); saveMasterDataToServer().catch(function(e){alert('ذخیره اطلاعات پایه در سرور انجام نشد: '+e.message);}); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords();
 }
 
 function addPersonItem() {
@@ -1592,10 +1751,10 @@ function addPersonItem() {
   var code = codeEl.value.trim(); var name = nameEl.value.trim();
   if (!code || !name) { alert("کد و نام را وارد کنید."); return; }
   if (db.master.people.some(function(p){return String(p.code).trim().toLowerCase() === code.toLowerCase();})) { alert("این کد قبلاً ثبت شده است."); return; }
-  db.master.people.push({ code: code, name: name }); codeEl.value = ""; nameEl.value = ""; saveDB(); renderMasterLists(); renderSelects(); renderReasons(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);});
+  db.master.people.push({ code: code, name: name }); codeEl.value = ""; nameEl.value = ""; saveDB(); saveMasterDataToServer().catch(function(e){alert('ذخیره اطلاعات پایه در سرور انجام نشد: '+e.message);}); renderMasterLists(); renderSelects(); renderReasons();
 }
 
-function removeMasterItem(key, index) { if (confirm("این مورد حذف شود؟")) { db.master[key].splice(index, 1); saveDB(); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); if(auth && auth.role==='admin') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData save pending:',e);}); } }
+function removeMasterItem(key, index) { if (confirm("این مورد حذف شود؟")) { db.master[key].splice(index, 1); saveDB(); saveMasterDataToServer().catch(function(e){alert('ذخیره اطلاعات پایه در سرور انجام نشد: '+e.message);}); renderMasterLists(); renderSelects(); renderReasons(); renderEntryHistory(); renderRecords(); } }
 
 document.getElementById("btn-add-person").addEventListener("click", addPersonItem);
 ["stations","parts","products","causes"].forEach(function(k){ document.getElementById("btn-add-" + k).addEventListener("click", function(){ addMasterItem(k); }); });
@@ -1611,7 +1770,7 @@ document.querySelectorAll(".tab").forEach(function(b) {
     document.querySelectorAll(".tab,.panel").forEach(function(x){ x.classList.remove("active"); });
     b.classList.add("active"); document.getElementById(b.dataset.tab).classList.add("active");
     if (b.dataset.tab === "records") renderRecords();
-    if (b.dataset.tab === "dashboardManagement") renderReports();
+    if (b.dataset.tab === "dashboardManagement") { renderReports(); refreshDashboardData(false); }
     if (b.dataset.tab === "master") renderMasterLists();
   });
 });
@@ -1718,30 +1877,69 @@ window.addEventListener('scroll',function(){['reportFrom','reportTo'].forEach(fu
 
 // ============ خروجی‌ها ============
 function csvCell(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
+function exportCauseValue(record, causeName) {
+  var causes = Array.isArray(record.causes) ? record.causes : [];
+  var weights = Array.isArray(record.weights) ? record.weights : [];
+  var idx = causes.findIndex(function(c){ return normalizeHeaderText(c) === normalizeHeaderText(causeName); });
+  return idx >= 0 ? num(weights[idx]) : 0;
+}
+function normalizeHeaderText(v) {
+  return String(v == null ? '' : v).replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/[\u200c\s]+/g,' ').trim().toLowerCase();
+}
 function exportCSV() {
-  var rows = filteredRecords(); var headers = ["تاریخ","کد اپراتور","نام اپراتور","ایستگاه","کد دستگاه","قطعه","محصول","تعداد ضایعات"].concat(db.master.causes.map(function(c){return c + " (گرم)";})).concat(["جمع کل (گرم)","توضیحات"]);
-  var lines = [headers].concat(rows.map(function(r) {
-    return [r.date, r.personCode, r.personName, r.station, r.machine, r.part, r.product, r.quantity].concat(db.master.causes.map(function(c, i){return r.weights && r.weights[i] || 0;})).concat([total(r), r.notes]);
-  }));
-  downloadBlob("\ufeff" + lines.map(function(row){return row.map(csvCell).join(",");}).join("\r\n"), "text/csv;charset=utf-8", "سوابق-ضایعات.csv");
+  try {
+    var rows = filteredRecords();
+    var causes = Array.isArray(db.master.causes) ? db.master.causes : [];
+    var headers = ["ردیف","تاریخ","کد اپراتور","نام اپراتور","ایستگاه","کد دستگاه","قطعه / شبکه","محصول","تعداد ضایعات"]
+      .concat(causes.map(function(c){return c + " (گرم)";})).concat(["جمع کل (گرم)","توضیحات"]);
+    var lines = [headers].concat(rows.map(function(r,i) {
+      return [i+1,toJalaliText(r.date)||r.date,r.personCode,r.personName,r.station,r.machine,r.part,r.product,r.quantity]
+        .concat(causes.map(function(c){return exportCauseValue(r,c);}))
+        .concat([total(r),r.notes]);
+    }));
+    downloadBlob("\ufeff" + lines.map(function(row){return row.map(csvCell).join(",");}).join("\r\n"), "text/csv;charset=utf-8", "سوابق-ضایعات.csv");
+  } catch(e) { alert('تهیه خروجی CSV ناموفق بود: ' + (e.message || e)); }
 }
 function exportExcel() {
-  var records = filteredRecords(); var causes = db.master.causes;
-  var causesHead = causes.map(function(c){return '<th style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">' + esc(c) + '</th>';}).join("");
-  var headerRow1 = '<tr><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">ردیف</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">کد اپراتور</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">نام اپراتور</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">ایستگاه مرتبط</th><th colspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">مشخصه محصول</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">تعداد ضایعات</th><th colspan="' + causes.length + '" style="background:#C6EFCE;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">علت / وزن ضایعات (گرم)</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">جمع کل</th><th rowspan="2" style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">توضیحات</th></tr>';
-  var headerRow2 = '<tr><th style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">قطعه / شبکه</th><th style="background:#D9E1F2;color:#000;border:1px solid #000;padding:6px;font-size:10pt;">محصول</th>' + causesHead + '</tr>';
-  var bodyRows = records.map(function(r, i) {
-    var rCauses = r.causes || causes; var rWeights = r.weights || [];
-    var causeCells = rCauses.map(function(c, idx) { var val = num(rWeights[idx]); return '<td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-family:B Nazanin,Tahoma;">' + (val > 0 ? fmt(val) : '') + '</td>'; }).join("");
-    return '<tr><td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-family:B Nazanin,Tahoma;">' + fmt(i+1) + '</td><td style="border:1px solid #000;padding:5px;text-align:center;vertical-align:middle;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.personCode || "—") + '</td><td style="border:1px solid #000;padding:5px;text-align:center;vertical-align:middle;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.personName || "—") + '</td><td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.station) + '</td><td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.part || "—") + '</td><td style="border:1px solid #000;padding:5px;text-align:right;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.product) + '</td><td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-family:B Nazanin,Tahoma;">' + fmt(r.quantity) + '</td>' + causeCells + '<td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-weight:bold;font-family:B Nazanin,Tahoma;background:#E2EFDA;">' + fmt(total(r)) + '</td><td style="border:1px solid #000;padding:5px;text-align:right;font-size:10pt;font-family:B Nazanin,Tahoma;">' + esc(r.notes || '') + '</td></tr>';
-  }).join("");
-  var sumTotal = records.reduce(function(s, r){return s + total(r);}, 0); var sumQty = records.reduce(function(s, r){return s + num(r.quantity);}, 0);
-  var causeSums = causes.map(function(c, i) { var s = records.reduce(function(acc, r){return acc + num(r.weights && r.weights[i]);}, 0); return '<td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-weight:bold;font-family:B Nazanin,Tahoma;background:#C6EFCE;">' + (s > 0 ? fmt(s) : '') + '</td>'; }).join("");
-  var footerRow = '<tr><td colspan="6" style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-weight:bold;font-family:B Nazanin,Tahoma;background:#D9E1F2;">جمع کل</td><td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-weight:bold;font-family:B Nazanin,Tahoma;background:#D9E1F2;">' + fmt(sumQty) + '</td>' + causeSums + '<td style="border:1px solid #000;padding:5px;text-align:center;font-size:10pt;font-weight:bold;font-family:B Nazanin,Tahoma;background:#C6EFCE;">' + fmt(sumTotal) + '</td><td style="border:1px solid #000;padding:5px;"></td></tr>';
-  var html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><style>body { direction: rtl; font-family: \"B Nazanin\", Tahoma, sans-serif; } table { border-collapse: collapse; direction: rtl; } td, th { font-family: \"B Nazanin\", Tahoma, sans-serif; font-size: 10pt; mso-number-format: \"@\"; } td { text-align: center; }</style></head><body dir="rtl" style="direction:rtl;"><table border="1" dir="rtl" style="direction:rtl;border-collapse:collapse;"><thead>' + headerRow1 + headerRow2 + '</thead><tbody>' + bodyRows + '</tbody><tfoot>' + footerRow + '</tfoot></table></body></html>' ;
-  downloadBlob("\ufeff" + html, "application/vnd.ms-excel;charset=utf-8", "گزارش-ضایعات.xls");
+  try {
+    var records = filteredRecords();
+    var causes = Array.isArray(db.master.causes) ? db.master.causes : [];
+    var cellStyle='border:1px solid #64748b;padding:5px;text-align:center;font-size:10pt;font-family:Tahoma;';
+    var thStyle='background:#D9E1F2;color:#000;border:1px solid #64748b;padding:7px;font-size:10pt;font-family:Tahoma;';
+    var causesHead = causes.map(function(c){return '<th style="'+thStyle+'">' + esc(c) + '</th>';}).join("");
+    var headerRow1 = '<tr><th rowspan="2" style="'+thStyle+'">ردیف</th><th rowspan="2" style="'+thStyle+'">تاریخ</th><th rowspan="2" style="'+thStyle+'">کد اپراتور</th><th rowspan="2" style="'+thStyle+'">نام اپراتور</th><th rowspan="2" style="'+thStyle+'">ایستگاه مرتبط</th><th colspan="2" style="'+thStyle+'">مشخصه محصول</th><th rowspan="2" style="'+thStyle+'">تعداد ضایعات</th><th colspan="' + causes.length + '" style="background:#C6EFCE;color:#000;border:1px solid #64748b;padding:7px;">علت / وزن ضایعات (گرم)</th><th rowspan="2" style="'+thStyle+'">جمع کل</th><th rowspan="2" style="'+thStyle+'">توضیحات</th></tr>';
+    var headerRow2 = '<tr><th style="'+thStyle+'">قطعه / شبکه</th><th style="'+thStyle+'">محصول</th>' + causesHead + '</tr>';
+    var bodyRows = records.map(function(r, i) {
+      var causeCells = causes.map(function(c){var val=exportCauseValue(r,c);return '<td style="'+cellStyle+'">'+(val>0?fmt(val):'')+'</td>';}).join('');
+      return '<tr><td style="'+cellStyle+'">'+fmt(i+1)+'</td><td style="'+cellStyle+'">'+esc(toJalaliText(r.date)||r.date||'')+'</td><td style="'+cellStyle+'">'+esc(r.personCode||'—')+'</td><td style="'+cellStyle+'">'+esc(r.personName||'—')+'</td><td style="'+cellStyle+'">'+esc(r.station||'—')+'</td><td style="'+cellStyle+'">'+esc(r.part||'—')+'</td><td style="'+cellStyle+'">'+esc(r.product||'—')+'</td><td style="'+cellStyle+'">'+fmt(r.quantity)+'</td>'+causeCells+'<td style="'+cellStyle+'font-weight:bold;background:#E2EFDA;">'+fmt(total(r))+'</td><td style="'+cellStyle+'text-align:right;">'+esc(r.notes||'')+'</td></tr>';
+    }).join('');
+    var sumTotal=records.reduce(function(a,r){return a+total(r);},0);
+    var sumQty=records.reduce(function(a,r){return a+num(r.quantity);},0);
+    var causeSums=causes.map(function(c){var v=records.reduce(function(a,r){return a+exportCauseValue(r,c);},0);return '<td style="'+cellStyle+'font-weight:bold;background:#C6EFCE;">'+(v?fmt(v):'')+'</td>';}).join('');
+    var footer='<tr><td colspan="7" style="'+cellStyle+'font-weight:bold;background:#D9E1F2;">جمع کل</td><td style="'+cellStyle+'font-weight:bold;">'+fmt(sumQty)+'</td>'+causeSums+'<td style="'+cellStyle+'font-weight:bold;background:#E2EFDA;">'+fmt(sumTotal)+'</td><td style="'+cellStyle+'"></td></tr>';
+    var html='<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><style>body{direction:rtl;font-family:Tahoma}table{border-collapse:collapse;direction:rtl;width:100%}td,th{mso-number-format:"\\@";}</style></head><body dir="rtl"><table border="1" dir="rtl"><thead>'+headerRow1+headerRow2+'</thead><tbody>'+bodyRows+'</tbody><tfoot>'+footer+'</tfoot></table></body></html>';
+    downloadBlob('\ufeff'+html,'application/vnd.ms-excel;charset=utf-8','گزارش-ضایعات.xls');
+  } catch(e) { alert('تهیه فایل اکسل ناموفق بود: ' + (e.message || e)); }
 }
-function downloadBlob(content, type, name) { var blob = new Blob([content], { type: type }); var url = URL.createObjectURL(blob); var a = document.createElement("a"); a.href = url; a.download = name; a.click(); setTimeout(function(){ URL.revokeObjectURL(url); }, 1500); }
+function downloadBlob(content, type, name) {
+  try {
+    var blob = content instanceof Blob ? content : new Blob([content], { type: type });
+    // Android WebView cannot download blob: URLs without a native bridge.
+    if (window.WasteDownloads && typeof window.WasteDownloads.saveDownload === 'function') {
+      var reader = new FileReader();
+      reader.onload = function(){
+        try { var dataUrl=String(reader.result||''); var base64=dataUrl.indexOf(',')>=0?dataUrl.slice(dataUrl.indexOf(',')+1):''; window.WasteDownloads.saveDownload(String(name||'download'),String(type||'application/octet-stream'),base64); }
+        catch(err){ alert('ارسال فایل برای ذخیره در گوشی ناموفق بود: '+(err.message||err)); }
+      };
+      reader.onerror=function(){alert('خواندن فایل خروجی ناموفق بود.');};
+      reader.readAsDataURL(blob); return;
+    }
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name || 'download'; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ try{a.remove();URL.revokeObjectURL(url);}catch(e){} }, 5000);
+  } catch(e) { alert('ذخیره فایل ناموفق بود: '+(e.message||e)); }
+}
 function backup() { downloadBlob(JSON.stringify(db, null, 2), "application/json;charset=utf-8", "پشتیبان-ضایعات.json"); }
 
 document.getElementById("restoreFile").addEventListener("change", function(e) {
@@ -1766,78 +1964,44 @@ function apiCall(action, payload){
     .then(function(t){var j; try{j=JSON.parse(t);}catch(e){throw new Error('پاسخ سرور معتبر نیست.');} if(!j.ok) throw new Error(j.error||'خطای سرویس'); return j.data;});
 }
 
-// Immediate cloud write for a single newly saved/edited record.
-// This bypasses the legacy-queue approval prompt only for this exact record;
-// unrelated pending operations remain queued and unchanged.
-function syncRecordImmediately(record){
-  if(!auth) return Promise.reject(new Error('برای ارسال، ابتدا وارد حساب کاربری شوید.'));
-  if(!navigator.onLine) return Promise.reject(new Error('اتصال اینترنت برقرار نیست.'));
-  if(!record || !record.id) return Promise.reject(new Error('شناسه رکورد معتبر نیست.'));
-  var owner=String(record.owner||auth.username);
-  if(auth.role!=='admin' && owner!==String(auth.username)) return Promise.reject(new Error('اجازه ثبت برای شیت کاربر دیگر وجود ندارد.'));
-  var snapshot=JSON.parse(JSON.stringify(record));
-  snapshot.owner=owner;
-  var operation={op:'upsert',owner:owner,id:String(snapshot.id),record:snapshot};
-  return apiCall('sync',{operations:[operation]}).then(function(result){
-    if(!result || Number(result.processed)!==1) throw new Error('سرور ثبت این رکورد را تأیید نکرد.');
-    // The backend returns only after writing both the owner's sheet and admin aggregate.
-    return apiCall('listRecords',{}).then(function(data){
-      if(!data || !Array.isArray(data.records)) throw new Error('پاسخ تأیید سوابق از سرور معتبر نیست.');
-      var found=data.records.some(function(row){
-        return String(row.id)===String(snapshot.id) &&
-          (auth.role==='admin' || String(row.owner||auth.username)===owner);
-      });
-      if(!found) throw new Error('رکورد پس از ثبت از سرور قابل تأیید نبود؛ در صف ارسال باقی ماند.');
-      // Remove only queued upserts for this same owner+record after server confirmation.
-      syncQueue=syncQueue.filter(function(op){
-        var opOwner=String(op.owner||(op.record&&op.record.owner)||auth.username);
-        var opId=String(op.record?op.record.id:(op.id||''));
-        return !(opOwner===owner && opId===String(snapshot.id) && op.op==='upsert');
-      });
-      persistQueue();
-      knownRecords[owner+'|'+String(snapshot.id)]=JSON.stringify(snapshot);
-      updateSyncStatus();
-      return {saved:true,owner:owner,id:String(snapshot.id)};
-    });
-  });
-}
-
-// MasterData is server-authoritative. Local storage is only an offline cache.
-var MASTER_PENDING_KEY = 'wasteAppMasterPending_v1';
-var masterSyncInFlight = null;
-function refreshMasterDataFromServer(silent){
+function loadMasterDataFromServer(){
   if(!auth || !navigator.onLine) return Promise.resolve(false);
-  if(auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1') return Promise.resolve(false);
   return apiCall('getMasterData',{}).then(function(data){
-    if(!data || !data.master || !Array.isArray(data.master.causes)) throw new Error('ساختار MasterData دریافتی معتبر نیست.');
-    db.master=data.master;
-    localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
-    renderSelects(); renderReasons(); renderMasterLists();
-    return true;
-  }).catch(function(err){
-    if(!silent) console.warn('MasterData refresh failed:',err);
-    throw err;
+    if(data && data.master){
+      var clean=data.master;
+      ['people','stations','parts','products','causes'].forEach(function(k){if(!Array.isArray(clean[k]))clean[k]=[];});
+      db.master=clean;
+      localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
+      renderSelects();renderReasons();renderMasterLists();
+      return true;
+    }
+    // First initialization only: publish the already configured admin master lists.
+    if(auth.role==='admin') return apiCall('saveMasterData',{master:db.master}).then(function(){return true;});
+    return false;
   });
 }
-function syncMasterDataToServer(silent){
-  if(!auth || auth.role!=='admin') return Promise.resolve(false);
-  if(!navigator.onLine){localStorage.setItem(MASTER_PENDING_KEY,'1');return Promise.resolve(false);}
-  if(masterSyncInFlight) return masterSyncInFlight;
-  localStorage.setItem(MASTER_PENDING_KEY,'1');
-  var snapshot=JSON.parse(JSON.stringify(db.master));
-  masterSyncInFlight=apiCall('saveMasterData',{master:snapshot}).then(function(data){
-    if(!data || data.saved!==true || !data.master) throw new Error('ذخیره MasterData توسط سرور تأیید نشد.');
-    db.master=data.master;
-    localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
-    localStorage.removeItem(MASTER_PENDING_KEY);
-    renderSelects(); renderReasons(); renderMasterLists();
+function saveMasterDataToServer(){
+  localStorage.setItem(MASTER_KEY,JSON.stringify(db.master));
+  if(!auth || auth.role!=='admin' || !navigator.onLine) return Promise.resolve(false);
+  return apiCall('saveMasterData',{master:db.master}).then(function(){return true;});
+}
+function refreshDashboardData(silent){
+  if(!auth || !navigator.onLine) return Promise.resolve(false);
+  if(auth.role!=='admin' && (auth.permissions||[]).indexOf('reports')<0) return Promise.resolve(false);
+  return apiCall('listDashboardRecords',{}).then(function(data){
+    if(!data || !Array.isArray(data.records)) throw new Error('داده داشبورد از شیت admin معتبر نیست.');
+    dashboardRecords=data.records;
+    try{localStorage.setItem(DASHBOARD_CACHE_KEY,JSON.stringify(dashboardRecords));}catch(e){}
+    renderReports();
     return true;
   }).catch(function(err){
-    localStorage.setItem(MASTER_PENDING_KEY,'1');
-    if(!silent) alert('ذخیره اطلاعات پایه در Google Sheets ناموفق بود: '+(err&&err.message?err.message:err));
-    throw err;
-  }).finally(function(){masterSyncInFlight=null;});
-  return masterSyncInFlight;
+    if(!dashboardRecords.length){
+      try{var cached=JSON.parse(localStorage.getItem(DASHBOARD_CACHE_KEY)||'[]');if(Array.isArray(cached))dashboardRecords=cached;}catch(e){}
+    }
+    renderReports();
+    if(!silent) alert('دریافت داشبورد مدیریتی از شیت admin انجام نشد: '+err.message);
+    return false;
+  });
 }
 
 function showApp(){
@@ -1849,9 +2013,11 @@ function showApp(){
   if(allowed.indexOf('reports')>=0 && allowed.indexOf('dashboardManagement')<0) allowed.push('dashboardManagement');
   document.querySelectorAll('.tabs .tab').forEach(function(tab){ tab.style.display=(tab.dataset.tab==='admin'?(auth.role==='admin'?'':'none'):(allowed.indexOf(tab.dataset.tab)>=0?'':'none')); });
   document.querySelectorAll('.panel').forEach(function(panel){ if(panel.id!=='admin' && allowed.indexOf(panel.id)<0) panel.classList.remove('active'); });
-  document.getElementById('entry').classList.add('active');
-  document.querySelector('.tab[data-tab="entry"]').classList.add('active');
+  var initialTab=['entry','records','dashboardManagement','master'].find(function(id){return allowed.indexOf(id)>=0;}) || 'entry';
+  document.querySelectorAll('.tabs .tab').forEach(function(tab){if(tab.dataset.tab===initialTab)tab.classList.add('active');});
+  var initialPanel=document.getElementById(initialTab); if(initialPanel)initialPanel.classList.add('active');
   renderAll(); updateSyncStatus();
+  if(auth.role==='admin' || (auth.permissions||[]).indexOf('reports')>=0) refreshDashboardData(true);
 }
 
 function updateSyncStatus(){
@@ -1953,44 +2119,91 @@ function loadLoginUsers(forceRefresh){
       loginUsersRequestInFlight=false;
     });
 }
+function biometricBridge(){try{return window.WasteBiometric||null;}catch(e){return null;}}
+function refreshBiometricButton(){var b=document.getElementById('biometricLoginBtn'),h=document.getElementById('biometricHint'),n=biometricBridge();if(!b)return;var available=!!(n&&n.isAvailable());b.style.display=(available&&n.isEnabled()&&loadAuth())?'block':'none';if(h){if(n&&!available){h.textContent=n.availabilityMessage();h.style.display='block';}else{h.textContent='';h.style.display='none';}}}
+function loginWithBiometric(){
+  var n=biometricBridge(),status=document.getElementById('authStatus');
+  if(!n||!n.isAvailable()||!n.isEnabled()){status.textContent='ورود با اثر انگشت در دسترس نیست؛ با رمز عبور وارد شوید.';return;}
+  status.textContent='لطفاً اثر انگشت خود را تأیید کنید...';
+  n.authenticate('onWasteBiometricLogin');
+}
+function onWasteBiometricLogin(ok,message){
+  var status=document.getElementById('authStatus');
+  if(!ok){status.textContent=message||'تأیید اثر انگشت انجام نشد.';return;}
+  var cached=loadAuth();
+  if(!cached||!cached.username){status.textContent='اطلاعات ورود آفلاین پیدا نشد؛ یک‌بار با اینترنت وارد شوید.';return;}
+  auth=cached;status.textContent='ورود آفلاین با اثر انگشت انجام شد.';showApp();updateSyncStatus();
+}
+function offerBiometricSetup(){
+  var n=biometricBridge();
+  if(!n||!n.isAvailable()||n.isEnabled())return;
+  if(!confirm('آیا می‌خواهید ورود به این برنامه با اثر انگشت گوشی فعال شود؟'))return;
+  document.getElementById('authStatus').textContent='برای فعال‌سازی، اثر انگشت خود را تأیید کنید...';
+  n.enable('onWasteBiometricEnabled');
+}
+function onWasteBiometricEnabled(ok,message){
+  document.getElementById('authStatus').textContent=ok?'ورود با اثر انگشت فعال شد.':'فعال‌سازی اثر انگشت انجام نشد: '+(message||'');
+  refreshBiometricButton();
+}
+
 function doLogin(){
   var username=document.getElementById('loginUser').value.trim();
   var password=document.getElementById('loginPass').value;
   var status=document.getElementById('authStatus');
   if(!username||!password){status.textContent='نام کاربری و رمز را وارد کنید.';return;}
   status.textContent='در حال بررسی...';
+  function enterOffline(){
+    var cachedSession=loadAuth();
+    if(!cachedSession||cachedSession.username!==username){status.textContent='برای ورود آفلاین، ابتدا با اینترنت وارد همین حساب شوید.';return;}
+    verifyOfflineCredential(username,password).then(function(valid){
+      if(!valid){status.textContent='رمز عبور آفلاین تأیید نشد. برای ثبت امن رمز، یک‌بار با اینترنت وارد شوید.';return;}
+      auth=cachedSession;
+      document.getElementById('loginPass').value='';
+      status.textContent='ورود آفلاین با تأیید رمز عبور انجام شد.';
+      showApp();updateSyncStatus();
+    });
+  }
+  if(!navigator.onLine){enterOffline();return;}
   apiCall('login',{username:username,password:password}).then(function(data){
     setAuth({username:data.username,role:data.role,permissions:data.permissions||['entry'],token:data.token});
-    return refreshMasterDataFromServer(true).catch(function(e){console.warn('Using cached MasterData because server refresh failed:',e);});
+    // Cache a one-way, salted password verifier for secure offline login.
+    return saveOfflineCredential(username,password).catch(function(err){console.warn('Offline credential cache:',err);throw new Error('ورود آنلاین انجام شد، اما ذخیره امن رمز برای ورود آفلاین ناموفق بود. لطفاً یک‌بار دیگر وارد شوید.');}).then(function(){
+      if(auth.role!=='admin') {
+        db.records=(db.records||[]).filter(function(r){return String(r.owner||auth.username)===auth.username;});
+        syncQueue=syncQueue.filter(function(op){return String(op.owner||(op.record&&op.record.owner)||auth.username)===auth.username;});
+        persistQueue();
+        localStorage.setItem(DB_KEY,JSON.stringify({records:db.records}));
+      }
+      knownRecords={}; (db.records||[]).forEach(function(r){knownRecords[String(r.owner||auth.username)+'|'+String(r.id)]=JSON.stringify(r);});
+      document.getElementById('loginPass').value='';
+      status.textContent='ورود موفق.';
+      return loadMasterDataFromServer().catch(function(err){console.warn('Master data sync:',err);return false;});
+    });
   }).then(function(){
-    // Isolate browser-side records and pending writes by signed-in account.
-    // Admin retains the consolidated view; ordinary users retain only their own rows.
-    if(auth.role!=='admin') {
-      db.records=(db.records||[]).filter(function(r){return String(r.owner||auth.username)===auth.username;});
-      syncQueue=syncQueue.filter(function(op){return String(op.owner||(op.record&&op.record.owner)||auth.username)===auth.username;});
-      persistQueue();
-      localStorage.setItem(DB_KEY,JSON.stringify({records:db.records}));
-    }
-    knownRecords={}; (db.records||[]).forEach(function(r){knownRecords[String(r.owner||auth.username)+'|'+String(r.id)]=JSON.stringify(r);});
-    document.getElementById('loginPass').value='';
-    status.textContent='ورود موفق.'; showApp();
-    syncNow(true).catch(function(e){ console.warn('Background sync:',e); });
-  }).catch(function(e){status.textContent=e.message;});
+    if(!auth)return;
+    showApp();
+    offerBiometricSetup();
+    refreshBiometricButton();
+    if(navigator.onLine)syncNow(true).catch(function(e){console.warn('Background sync:',e);});
+  }).catch(function(e){
+    var msg=String(e&&e.message||e);
+    var networkFailure=!navigator.onLine||/failed to fetch|networkerror|load failed|internet disconnected|net::err|disconnected|network request failed|typeerror/i.test(msg);
+    if(networkFailure){enterOffline();return;}
+    status.textContent=msg;
+  });
 }
 
 function syncNow(silent){
   silent = !!silent;
-  if(syncInFlight) return syncInFlight;
+  // اگر همگام‌سازی دیگری در حال اجراست، پس از پایان آن صف باقی‌مانده را نیز ارسال کن.
+  if(syncInFlight) {
+    return syncInFlight.then(function(){
+      if(syncQueue.length && auth && navigator.onLine) return syncNow(silent);
+      updateSyncStatus();
+    });
+  }
   if(!auth || !navigator.onLine){updateSyncStatus();return Promise.resolve();}
   var batch=syncQueue.slice();
-  var queueApprovalKey='wasteAppQueueTargetApproval_v1';
-  var centralSpreadsheetId='14h4XFuRExo3iJNJnxmMeq1Rb4dSyi_X6-O4GQWY-1Gw';
-  if(batch.length && localStorage.getItem(queueApprovalKey)!==centralSpreadsheetId){
-    if(silent){ updateSyncStatus(); return Promise.resolve(); }
-    var approved=confirm('تغییرات همگام‌نشده در حافظه این دستگاه وجود دارد. مقصد جدید، بانک اطلاعات مرکزی اولیه است. آیا انتقال این تغییرات به بانک مرکزی را تأیید می‌کنید؟ اگر مطمئن نیستید «لغو» را بزنید؛ هیچ موردی از صف حذف نمی‌شود.');
-    if(!approved){ updateSyncStatus(); return Promise.resolve(); }
-    localStorage.setItem(queueApprovalKey,centralSpreadsheetId);
-  }
   var canRead=true; // دریافت سوابق فقط از سمت سرورِ همان کاربر/همه کاربران برای مدیر مجاز است
   var canWrite=auth.role==='admin'||(auth.permissions||[]).indexOf('entry')>=0;
   function opKey(op){return String(op.owner||auth.username)+'|'+String(op.record?op.record.id:op.id||'');}
@@ -2053,12 +2266,9 @@ function syncNow(silent){
     }).finally(function(){suppressQueue=false;});
   }
   
-  var masterTask = (auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1')
-    ? syncMasterDataToServer(true).catch(function(e){console.warn('MasterData push remains pending:',e);})
-    : refreshMasterDataFromServer(true).catch(function(e){console.warn('MasterData refresh failed; cached values retained:',e);});
   var promise;
   if(batch.length && canWrite){
-    promise=masterTask.then(function(){return apiCall('sync',{operations:batch});}).then(function(result){
+    promise=apiCall('sync',{operations:batch}).then(function(result){
       if(!result || Number(result.processed)!==batch.length) throw new Error('سرور عملیات را تأیید نکرد.');
       if(canRead){
         return apiCall('listRecords',{}).then(function(data){
@@ -2071,7 +2281,7 @@ function syncNow(silent){
       }
       removeSentOperations(batch); return;
     });
-  } else if(canRead){ promise=masterTask.then(function(){return applyServerSnapshot([]);}); } else { promise=masterTask; }
+  } else if(canRead){ promise=applyServerSnapshot([]); } else { promise=Promise.resolve(); }
   
   syncInFlight = Promise.resolve(promise).then(function(){updateSyncStatus();}).catch(function(e){
     suppressQueue=false; updateSyncStatus();
@@ -2081,14 +2291,15 @@ function syncNow(silent){
   return syncInFlight;
 }
 
-function logout(){ if(syncQueue.length && !confirm('تغییرات همگام‌نشده دارید. خارج می‌شوید؟'))return; setAuth(null); document.getElementById('mainApp').style.display='none'; document.getElementById('authGate').style.display='flex'; document.getElementById('authStatus').textContent='خارج شدید.'; }
-window.addEventListener('online',function(){
-  if(auth){
-    if(auth.role==='admin' && localStorage.getItem(MASTER_PENDING_KEY)==='1') syncMasterDataToServer(true).catch(function(e){console.warn('MasterData retry failed:',e);});
-    else refreshMasterDataFromServer(true).catch(function(e){console.warn('MasterData refresh failed:',e);});
-    syncNow(true).catch(function(e){console.warn('Sync retry failed:',e);});
+function logout(){
+  // This button closes the Android app only; it is deliberately not a logout.
+  // Keep the offline session, saved credentials, biometric setting and sync queue intact.
+  if (window.WasteApp && typeof window.WasteApp.closeApp === 'function') {
+    window.WasteApp.closeApp();
+  } else {
+    alert('برای بستن برنامه از دکمه بازگشت گوشی یا بستن پنجره استفاده کنید.');
   }
-});
+}
 
 function loadDeletedRecords(){
   return apiCall('listDeletedRecords',{}).then(function(data){
@@ -2101,7 +2312,7 @@ function loadDeletedRecords(){
     }
     buildTableHead('deletedRecordsHead',causeNames);
     var body=document.getElementById('deletedRecordsBody'); var foot=document.getElementById('deletedRecordsFoot');
-    var columnCount=11+causeNames.length;
+    var columnCount=12+causeNames.length;
     if(!rows.length){ body.innerHTML='<tr><td colspan="'+columnCount+'" style="text-align:center;padding:30px;color:var(--text-muted)">رکورد حذف‌شده‌ای وجود ندارد.</td></tr>'; if(foot)foot.innerHTML=''; }
     else {
       body.innerHTML=rows.map(function(r,i){
@@ -2120,7 +2331,7 @@ function loadDeletedRecords(){
       if(foot){
         var sumQty=rows.reduce(function(a,r){return a+num(r.quantity);},0); var sumTotal=rows.reduce(function(a,r){return a+((r.totalWeight!==undefined&&r.totalWeight!==null&&r.totalWeight!=='')?num(r.totalWeight):(r.weights||[]).reduce(function(x,v){return x+num(v);},0));},0);
         var causeSums=causeNames.map(function(c){var v=rows.reduce(function(a,r){var map={};(r.causes||[]).forEach(function(name,j){var key=archiveCauseKey(name), value=num((r.weights||[])[j]);if(value>0&&(!map[key]||String(name).trim()===key))map[key]=value;else if(map[key]===undefined)map[key]=value;});return a+num(map[archiveCauseKey(c)]);},0);return '<td>'+(v>0?fmt(v):'')+'</td>';}).join('');
-        foot.innerHTML='<tr><td colspan="6">جمع کل</td><td>'+fmt(sumQty)+'</td>'+causeSums+'<td class="total">'+fmt(sumTotal)+'</td><td></td><td></td></tr>';
+        foot.innerHTML='<tr><td colspan="8">جمع کل</td><td>'+fmt(sumQty)+'</td>'+causeSums+'<td class="total">'+fmt(sumTotal)+'</td><td></td><td></td></tr>';
       }
     }
     document.getElementById('deletedRecordsInfo').textContent='تعداد رکوردهای بایگانی: '+fmt(rows.length);
@@ -2312,13 +2523,21 @@ function exportDashboardTablePdf(button){
   requestAnimationFrame(function(){requestAnimationFrame(function(){
     var h=Math.max(printCard.scrollHeight,printCard.getBoundingClientRect().height,1);
     var w=Math.max(printCard.scrollWidth,printCard.getBoundingClientRect().width,1);
-    var scale=Math.min(1,1085/w,740/h);
+    var scale=Math.min(1,1080/w,700/h);
     printCard.style.setProperty('--pdf-scale',String(Math.max(.08,scale)));
     var cleaned=false;
     var cleanup=function(){if(cleaned)return;cleaned=true;document.body.classList.remove('pdf-exporting');if(printHost.parentNode)printHost.parentNode.removeChild(printHost);document.title=oldTitle;window.removeEventListener('afterprint',cleanup);};
     window.addEventListener('afterprint',cleanup);
-    window.print();
-    setTimeout(function(){if(document.body.classList.contains('pdf-exporting'))cleanup();},60000);
+    if(window.WasteApp && typeof window.WasteApp.printDashboardPdf==='function'){
+      // Android WebView: use the native Android print framework. Keep the
+      // prepared report in the DOM while the print dialog renders it.
+      window.WasteApp.printDashboardPdf(document.title);
+      setTimeout(function(){if(document.body.classList.contains('pdf-exporting'))cleanup();},300000);
+    } else {
+      // Regular desktop/mobile browsers keep their native browser print flow.
+      window.print();
+      setTimeout(function(){if(document.body.classList.contains('pdf-exporting'))cleanup();},60000);
+    }
   });});
 }
 
@@ -2345,6 +2564,7 @@ function exportDashboardTablePdf(button){
 document.getElementById('loginBtn').addEventListener('click',doLogin);
 document.getElementById('retryLoginUsers').addEventListener('click',function(){this.style.display='none';loadLoginUsers(true);});
 document.getElementById('showLoginPass').addEventListener('change',function(){document.getElementById('loginPass').type=this.checked?'text':'password';});
+refreshBiometricButton();
 document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 document.getElementById('syncNow').addEventListener('click',function(){syncNow(false);});
 document.getElementById('logoutBtn').addEventListener('click',logout);
@@ -2365,6 +2585,7 @@ window.addEventListener('offline',updateSyncStatus);
 
 document.getElementById("date").value = todayISO();
 renderAll();
+// Always require the user's password; offline entry validates the locally stored PBKDF2 verifier.
 loadLoginUsers();
 </script>
 
@@ -2403,6 +2624,16 @@ loadLoginUsers();
  }
 }
 </style>
+<script>
+/* PWA registration: offline app shell; API POST requests continue to the live Apps Script backend. */
+(function () {
+  if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .catch(function (err) { console.warn('PWA service worker registration failed:', err); });
+  });
+})();
+</script>
 </body></html>
 <style id="v39-pdf-station-grid-layout">
 @media print{
@@ -2410,4 +2641,16 @@ loadLoginUsers();
  body.pdf-exporting .pdf-export-host .pdf-print-target .pdf-station-grid{display:grid!important;width:100%!important;min-width:0!important;max-width:100%!important;grid-auto-flow:row!important;grid-auto-rows:minmax(0,auto)!important;direction:rtl!important;box-sizing:border-box!important;}
  body.pdf-exporting .pdf-export-host .pdf-print-target .pdf-station-grid-cell{display:flex!important;min-width:0!important;max-width:none!important;visibility:visible!important;opacity:1!important;color:#102b63!important;-webkit-text-fill-color:#102b63!important;border:1px solid #15999a!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;}
 }
+
+.operator-code-field{position:relative;min-width:0}
+.operator-code-field input{position:relative;z-index:2;min-height:50px;font-size:16px!important;color:#111!important;-webkit-text-fill-color:#111!important;caret-color:#0f172a;background:#fff!important;opacity:1;pointer-events:auto;touch-action:pan-y;user-select:text;-webkit-user-select:text}
+.operator-code-field input:focus{outline:2px solid rgba(37,99,235,.22);border-color:#2563eb}
+.operator-suggestions{position:absolute;z-index:9999;top:100%;right:0;left:0;max-height:220px;overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #cbd5e1;border-radius:0 0 10px 10px;box-shadow:0 8px 20px rgba(15,23,42,.16);direction:rtl}
+.operator-suggestions[hidden]{display:none!important}
+.operator-suggestion{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 12px;border:0;border-bottom:1px solid #edf2f7;background:#fff;color:#172033;text-align:right;font:inherit;cursor:pointer;min-height:44px}
+.operator-suggestion:last-child{border-bottom:0}
+.operator-suggestion:active,.operator-suggestion.active{background:#eaf2ff}
+.operator-suggestion-code{direction:ltr;unicode-bidi:plaintext;font-weight:700}
+.operator-suggestion-name{font-size:13px}
+.operator-suggestion-empty{padding:12px;color:#64748b;font-size:13px;text-align:center}
 </style>
